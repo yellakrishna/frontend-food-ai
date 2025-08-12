@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
 import "./Navbar.css";
 import { assets } from "../../assets/assets";
-import logos from "/veg.png"
+import logos from "/veg.png";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { StoreContext } from "../../Context/StoreContext";
 
@@ -16,6 +16,8 @@ const Navbar = () => {
   const logout = () => {
     localStorage.removeItem("token");
     setToken("");
+    setMenuOpen(false); // Close mobile menu if open
+    setProfileOpen(false);
     navigate("/");
   };
 
@@ -39,12 +41,12 @@ const Navbar = () => {
     <nav className="navbar">
       {/* Logo */}
       <div className="navbar-left">
-        <Link to="/">
+        <Link to="/" onClick={() => setMenuOpen(false)}>
           <img className="navbar-logo" src={logos} alt="Logo" />
         </Link>
       </div>
 
-      {/* Desktop Menu */}
+      {/* Desktop & Mobile Menu */}
       <div className={`navbar-menu ${menuOpen ? "open" : ""}`}>
         <NavLink
           to="/"
@@ -53,6 +55,7 @@ const Navbar = () => {
         >
           Home
         </NavLink>
+
         <NavLink
           to="/menu"
           className="navbar-link"
@@ -60,6 +63,18 @@ const Navbar = () => {
         >
           Menu
         </NavLink>
+
+        <NavLink
+          to="/myorders"
+          className="navbar-link"
+          onClick={() => {
+            setMenuOpen(false);
+            navigate("/myorders");
+          }}
+        >
+          Orders
+        </NavLink>
+
         <a
           href="#footer"
           className="navbar-link"
@@ -71,12 +86,12 @@ const Navbar = () => {
 
       {/* Right Section */}
       <div className="navbar-right">
-        
-                <Link to="/myorders" onClick={() => navigate("/myorders")}>
-                  <img src={assets.bag_icon} alt="" /> <p></p>
-                </Link>
         {/* Cart */}
-        <Link to="/cart" className="navbar-icon-wrapper">
+        <Link
+          to="/cart"
+          className="navbar-icon-wrapper"
+          onClick={() => setMenuOpen(false)}
+        >
           <img src={assets.basket_icon} alt="Cart" />
           {getTotalCartAmount() > 0 && <div className="navbar-cart-dot" />}
         </Link>
@@ -85,7 +100,10 @@ const Navbar = () => {
         {!token ? (
           <button
             className="navbar-btn"
-            onClick={() => navigate("/login")} // ✅ Always go to /login route
+            onClick={() => {
+              setMenuOpen(false);
+              navigate("/login");
+            }}
           >
             Sign In
           </button>
@@ -99,7 +117,13 @@ const Navbar = () => {
             />
             {profileOpen && (
               <ul className="navbar-dropdown">
-                <li onClick={() => navigate("/myorders")}>
+                <li
+                  onClick={() => {
+                    setProfileOpen(false);
+                    setMenuOpen(false);
+                    navigate("/myorders");
+                  }}
+                >
                   <img src={assets.bag_icon} alt="" /> <p>Orders</p>
                 </li>
                 <hr />
